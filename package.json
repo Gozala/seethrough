@@ -1,12 +1,22 @@
 {
     "name": "seethrough",
     "description": "Seethrough is a simple XML/XHTML template engine for JavaScript based on E4X. It’s a port of a former project for Erlang.",
-    "keywords": ["template", "xml", "xhtml", "json"],
+    "keywords": [
+        "template",
+        "xml",
+        "xhtml",
+        "json"
+    ],
     "author": "Massimiliano Mirra (http://hyperstruct.net/)",
     "contributors": [
         "Irakli Gozalishvili (http://rfobic.wordpress.com/)"
     ],
     "lib": "lib",
-    "license": ["MPL 1.1","GPL 2.0", "LGPL 2.1"],
-    "dependencies": []
+    "license": [
+        "MPL 1.1",
+        "GPL 2.0",
+        "LGPL 2.1"
+    ],
+    "dependencies": [
+    ]
 }
