@@ -110,6 +110,70 @@ exports["test - empty children"] = function() {
     var result = '<div xmlns:st="http://hyperstruct.net/seethrough#js"><head/></div>';
     assert.isEqual(new Template(src).render(data), result);
 }
+exports["dis test - big loops"] = function() {
+    var src = '<ul xmlns:st="http://hyperstruct.net/seethrough#js"><li st:loop="number numbers"><span st:replace="number"/></li></ul>';
+    var data = {
+        numbers: (function() {
+            var result = [];
+            for (var i=0; i <= 10000; i++) result.push(i);
+            return result;
+        })()
+    };
+    var result = '<ul xmlns:st="http://hyperstruct.net/seethrough#js">'
+                + data.numbers.map(function(number) {
+                    return "<li>" + number + "</li>";
+                }).join("")
+                + '</ul>';
+    assert.isEqual(new Template(src).render(data), result);
+
+}
+exports["test - preserving xml header"] = function() {
+    var src = "<?xml version=\"1.0\"?>\n"
+            + "<note xmlns:st=\"http://hyperstruct.net/seethrough#js\">\n"
+            + "\t<to st:content=\"to\">Elene</to>\n"
+            + "\t<from st:content=\"from\">Gozala</from>\n"
+            + "\t<heading st:condition=\"hasHeader\">Reminder</heading>\n"
+            + "\t<body st:content=\"text\"></body>\n"
+            + "</note>";
+    var data = {
+        to: "Elene",
+        from: "Gozala",
+        text: "Don't forget me this weekend!"
+    };
+    var result = "<?xml version=\"1.0\"?>\n"
+            + "<note xmlns:st=\"http://hyperstruct.net/seethrough#js\">\n"
+            + "\t<to>Elene</to>\n"
+            + "\t<from>Gozala</from>\n"
+            + "\t\n"
+            + "\t<body>Don't forget me this weekend!</body>\n"
+            + "</note>";
+    assert.isEqual(new Template(src).render(data), result);
+}
+exports["test - preserving xhtml doctypes"] = function() {
+    var src = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
+            + "\t\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n\n"
+            + "\t<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:st=\"http://hyperstruct.net/seethrough#js\" "
+            + "lang=\"en-US\" xml:lang=\"en-US\">\n"
+            + "\t\t<head>\n"
+            + "\t\t\t<title>simple document</title>\n"
+            + "\t\t</head>\n"
+            + "\t<body st:content=\"text\">Buy HTML!!</body>\n"
+            + "</html>";
+    var data = {
+        text: "Hello XHTML!!"
+    };
+    var result = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n"
+            + "\t\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n\n"
+            + "\t<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:st=\"http://hyperstruct.net/seethrough#js\" "
+            + "lang=\"en-US\" xml:lang=\"en-US\">\n"
+            + "\t\t<head>\n"
+            + "\t\t\t<title>simple document</title>\n"
+            + "\t\t</head>\n"
+            + "\t<body>Hello XHTML!!</body>\n"
+            + "</html>";
+    assert.isEqual(new Template(src).render(data), result);
+}
+
 if (module.id == require.main)
     require('os').exit(require('test/runner').run(exports));
 
